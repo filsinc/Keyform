@@ -169,6 +169,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 #wc-flash.on{opacity:1;}
 #wc-label{position:fixed;top:40%;left:50%;transform:translate(-50%,-50%) scale(0.85);font-size:3.8rem;font-weight:normal;color:var(--text);letter-spacing:12px;text-transform:uppercase;pointer-events:none;z-index:500;opacity:0;transition:opacity 0.18s,transform 0.18s;}
 #wc-label.on{opacity:1;transform:translate(-50%,-50%) scale(1);}
+#oct-toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);font-size:1rem;letter-spacing:4px;text-transform:uppercase;color:var(--text);background:var(--surface);border:1px solid var(--border-s);border-radius:6px;padding:7px 18px;pointer-events:none;z-index:500;opacity:0;transition:opacity 0.15s,transform 0.15s;}
+#oct-toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
 #pt-layer{position:fixed;inset:0;pointer-events:none;z-index:420;overflow:hidden;}
  
 /* ── FEED ── */
@@ -279,6 +281,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
  
 <div id="wc-flash"></div>
 <div id="wc-label"></div>
+<div id="oct-toast"></div>
 <div id="pt-layer"></div>
  
 <header id="header">
@@ -513,10 +516,10 @@ document.getElementById('theme-toggle').addEventListener('click',()=>{
 // ── SCALES ──────────────────────────────────────────────
 const SCALES={
   standard: ['C2','D2','E2','F2','G2','A2','B2','C3','D3','E3','F3','G3','A3','B3','C4','D4','E4','F4','G4','A4','B4','C5','D5','E5','F5','G5'],
-  blues:    ['C2','Eb2','F2','Gb2','G2','Bb2','C3','Eb3','F3','Gb3','G3','Bb3','C4','Eb4','F4','Gb4','G4','Bb4','C5','Eb5','F5','Gb5','G5','Bb5','C2','D2'],
-  jazz:     ['C2','D2','Eb2','E2','G2','A2','Bb2','C3','D3','Eb3','E3','G3','A3','Bb3','C4','D4','Eb4','E4','G4','A4','Bb4','C5','D5','Eb5','E5','G5'],
-  pentatonic:['C2','D2','E2','G2','A2','C3','D3','E3','G3','A3','C4','D4','E4','G4','A4','C5','D5','E5','G5','A5','C2','D2','E2','G2','A2','C3'],
-  chromatic:['C2','C#2','D2','D#2','E2','F2','F#2','G2','G#2','A2','A#2','B2','C3','C#3','D3','D#3','E3','F3','F#3','G3','G#3','A3','A#3','B3']
+  blues:    ['C2','Eb2','F2','Gb2','G2','Bb2','C3','Eb3','F3','Gb3','G3','Bb3','C4','Eb4','F4','Gb4','G4','Bb4','C5','Eb5','F5','Gb5','G5','Bb5','C6','Eb6'],
+  jazz:     ['C2','D2','E2','F#2','G2','A2','Bb2','C3','D3','E3','F#3','G3','A3','Bb3','C4','D4','E4','F#4','G4','A4','Bb4','C5','D5','E5','F#5','G5'],
+  pentatonic:['C2','D2','E2','G2','A2','C3','D3','E3','G3','A3','C4','D4','E4','G4','A4','C5','D5','E5','G5','A5','C6','D6','E6','G6','A6','C7'],
+  chromatic:['C2','C#2','D2','D#2','E2','F2','F#2','G2','G#2','A2','A#2','B2','C3','C#3','D3','D#3','E3','F3','F#3','G3','G#3','A3','A#3','B3','C4','C#4']
 };
 const LKEYS='abcdefghijklmnopqrstuvwxyz'.split('');
 let curScale='standard', octShift=-1;
@@ -774,19 +777,19 @@ function handlePunct(type,label){addSK(label,'punct');flashK('key-'+type);if(PS[
 // Songs use direct notes instead of key letters for accuracy
 const SONGS=[
   {title:'Für Elise',artist:'Beethoven',
-   notes:['E4','D#4','E4','D#4','E4','B3','D4','C4','A3','_','C3','E3','A3','B3','_','E3','G#3','B3','C4','_','E3','E4','D#4','E4','D#4','E4','B3','D4','C4','A3']},
+   notes:['E4','D4','E4','D4','E4','B3','D4','C4','A3','_','C3','E3','A3','B3','_','E3','G3','B3','C4','_','E3','E4','D4','E4','D4','E4','B3','D4','C4','A3']},
   {title:'Twinkle Twinkle',artist:'Traditional',
    notes:['C4','C4','G4','G4','A4','A4','G4','_','F4','F4','E4','E4','D4','D4','C4','_','G4','G4','F4','F4','E4','E4','D4','_','G4','G4','F4','F4','E4','E4','D4','_','C4','C4','G4','G4','A4','A4','G4','_','F4','F4','E4','E4','D4','D4','C4']},
   {title:'Ode to Joy',artist:'Beethoven',
    notes:['E4','E4','F4','G4','G4','F4','E4','D4','C4','C4','D4','E4','E4','D4','D4','_','E4','E4','F4','G4','G4','F4','E4','D4','C4','C4','D4','E4','D4','C4','C4']},
   {title:'Happy Birthday',artist:'Traditional',
-   notes:['C4','C4','_','D4','C4','F4','E4','_','C4','C4','_','D4','C4','G4','F4','_','C4','C4','_','C5','A4','F4','E4','D4','_','A#4','A#4','_','A4','F4','G4','F4']},
+   notes:['C4','C4','_','D4','C4','F4','E4','_','C4','C4','_','D4','C4','G4','F4','_','C4','C4','_','C5','A4','F4','E4','D4','_','B4','B4','_','A4','F4','G4','F4']},
   {title:'Smoke on the Water',artist:'Deep Purple',
-   notes:['G3','A#3','C4','_','G3','A#3','C#4','C4','_','G3','A#3','C4','_','A#3','G3','_','G3','A#3','C4','_','G3','A#3','C#4','C4','_','G3','A#3','C4','_','A#3','G3']},
-  {title:'Flight of Bumblebee',artist:'Rimsky-Korsakov',
-   notes:['B4','A#4','A4','G#4','G4','F#4','F4','E4','D#4','E4','F4','F#4','G4','G#4','A4','A#4','B4','A#4','A4','G#4','G4','F#4','F4','E4','D#4','E4','F4','F#4','G4','G#4','A4','A#4','B4','C5','B4','A#4','A4','G#4','G4','F#4','F4','E4','D#4']},
-  {title:'Funky Blues Riff',artist:'Keyano Original',
-   notes:['C3','Eb3','F3','_','C3','Eb3','G3','_','C3','Eb3','F3','Eb3','C3','_','F3','Ab3','C4','_','F3','Ab3','Bb3','_','F3','Ab3','C4','Ab3','F3','_','C3','Eb3','F3','_','Eb3','C3']},
+   notes:['G3','B3','C4','_','G3','B3','D4','C4','_','G3','B3','C4','_','B3','G3','_','G3','B3','C4','_','G3','B3','D4','C4','_','G3','B3','C4','_','B3','G3']},
+  {title:'Mary Had a Little Lamb',artist:'Traditional',
+   notes:['E4','D4','C4','D4','E4','E4','E4','_','D4','D4','D4','_','E4','G4','G4','_','E4','D4','C4','D4','E4','E4','E4','_','D4','D4','E4','D4','C4']},
+  {title:'Soulful Groove',artist:'Keyano Original',
+   notes:['C3','E3','F3','_','C3','E3','G3','_','C3','E3','F3','E3','C3','_','F3','A3','C4','_','F3','A3','B3','_','F3','A3','C4','A3','F3','_','C3','E3','F3','_','E3','C3']},
 ];
  
 let sgOpen=false,sgSong=null,sgStep=0,sgPlaying=false,sgTimer=null,sgSpeed=0.8;
@@ -1129,6 +1132,17 @@ document.addEventListener('keydown',async e=>{
   if(e.key==='Enter'){e.preventDefault();newLine();return;}
   if(e.key==='Backspace'){e.preventDefault();handleBS();return;}
   if(e.key===' '){e.preventDefault();handleSpace();return;}
+  const OCT_MAP={'1':-3,'2':-2,'3':-1,'4':0,'5':1,'6':2,'7':3};
+  if(OCT_MAP[e.key]!==undefined){
+    releaseAll();octShift=OCT_MAP[e.key];
+    document.getElementById('oct-sl').value=octShift;
+    document.getElementById('oct-val').textContent=octShift>=0?'+'+octShift:String(octShift);
+    rebuildSGIfOpen();
+    const toast=document.getElementById('oct-toast');
+    toast.textContent='Octave '+(octShift>=0?'+':'')+octShift;
+    toast.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>toast.classList.remove('on'),1100);
+    return;
+  }
   if(e.key===','){handlePunct('comma',',');return;}
   if(e.key==='.'){handlePunct('period','.');return;}
   if(e.key==='!'){handlePunct('exclaim','!');return;}
