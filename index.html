@@ -2,67 +2,80 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Instrument</title>
+    <title>Keyano</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        :root {
+            --bg: #e8e6e0;
+            --key-bg-top: #2a2a2a;
+            --key-bg-bot: #111111;
+            --key-border: #3a3a3a;
+            --key-shadow: #000000;
+            --key-text: #ffffff;
+            --key-active-top: #444444;
+            --key-active-border: #888888;
+            --accent: #222222;
+        }
+
         body {
-            background: #f0f0f0;
+            background: var(--bg);
             height: 100vh;
             overflow: hidden;
             font-family: 'Times New Roman', Times, serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-end;
-            padding-bottom: 60px;
+            justify-content: space-between;
+            padding: 0 0 24px 0;
         }
 
-        /* Canvas where sentences form */
-        #sentence-canvas {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            bottom: 200px;
+        /* ── SENTENCE CANVAS ── */
+        #canvas {
+            flex: 1;
+            width: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
+            justify-content: flex-start;
             align-items: flex-start;
-            padding: 30px 40px;
+            padding: 32px 44px 16px 44px;
             gap: 12px;
-            pointer-events: none;
+            overflow: hidden;
         }
 
         .sentence-line {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 8px;
             align-items: center;
+            min-height: 74px;
         }
 
-        /* Each settled keycap in a sentence */
         .settled-key {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(170deg, #2a2a2a, #111111);
-            border: 1px solid #555;
-            border-radius: 7px;
+            width: 68px;
+            height: 68px;
+            background: linear-gradient(160deg, #2a2a2a, #111111);
+            border: 1.5px solid #3a3a3a;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #ffffff;
-            font-size: 1rem;
-            font-weight: normal;
             font-family: 'Times New Roman', Times, serif;
-            box-shadow: 0 4px 0 #000, 0 6px 10px rgba(0,0,0,0.3);
+            font-size: 1.6rem;
+            font-weight: normal;
+            font-style: normal;
+            box-shadow: 0 5px 0 #000, 0 8px 18px rgba(0,0,0,0.22);
             opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(12px) scale(0.92);
+            transition: opacity 0.22s ease, transform 0.22s ease;
+            flex-shrink: 0;
         }
 
         .settled-key.visible {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
 
         .settled-key.space-key {
@@ -73,310 +86,485 @@
         }
 
         .settled-key.punct-key {
-            width: 36px;
+            width: 44px;
+            font-size: 1.7rem;
         }
 
-        /* ESC fade out */
         .sentence-line.clearing .settled-key {
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            opacity: 0 !important;
+            transform: translateY(-28px) scale(0.85) !important;
+            transition: opacity 0.4s ease, transform 0.4s ease !important;
         }
 
-        /* Flying keycap animation */
+        /* ── FLYING KEYCAP ── */
         .flying-key {
             position: fixed;
-            width: 62px;
-            height: 62px;
-            background: linear-gradient(170deg, #2a2a2a, #111111);
-            border: 1px solid #555;
-            border-radius: 8px;
+            background: linear-gradient(160deg, #2a2a2a, #111111);
+            border: 1.5px solid #3a3a3a;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #ffffff;
-            font-size: 1.1rem;
-            font-weight: normal;
             font-family: 'Times New Roman', Times, serif;
+            font-weight: normal;
+            font-style: normal;
             pointer-events: none;
-            box-shadow: 0 6px 0 #000, 0 8px 15px rgba(0,0,0,0.4);
-            z-index: 200;
-            transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                        top 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                        width 0.4s ease,
-                        height 0.4s ease,
-                        font-size 0.4s ease;
+            box-shadow: 0 6px 0 #000, 0 8px 18px rgba(0,0,0,0.3);
+            z-index: 500;
+            transition:
+                left 0.36s cubic-bezier(0.22, 0.61, 0.36, 1),
+                top 0.36s cubic-bezier(0.22, 0.61, 0.36, 1),
+                width 0.36s ease,
+                height 0.36s ease,
+                font-size 0.36s ease,
+                border-radius 0.36s ease;
         }
 
-        /* Keyboard */
+        /* ── CONTROLS ── */
+        #controls {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            padding: 0 0 8px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .ctrl-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .ctrl-label {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 0.72rem;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        select {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 0.82rem;
+            background: #dddad4;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            padding: 3px 8px;
+            color: #222;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .toggle-btn {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 0.78rem;
+            background: #dddad4;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            padding: 3px 10px;
+            color: #444;
+            cursor: pointer;
+            transition: all 0.12s;
+        }
+
+        .toggle-btn.on {
+            background: #222;
+            color: #fff;
+            border-color: #222;
+        }
+
+        /* ── KEYBOARD ── */
         #keyboard {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
-            z-index: 10;
+            gap: 7px;
         }
 
         .key-row {
             display: flex;
-            gap: 8px;
+            gap: 7px;
+            align-items: center;
         }
 
         .key {
-            width: 62px;
-            height: 62px;
+            width: 54px;
+            height: 54px;
             background: linear-gradient(170deg, #2a2a2a, #111111);
-            border: 1px solid #444;
+            border: 1px solid #3a3a3a;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #ffffff;
-            font-size: 1.1rem;
-            font-weight: normal;
             font-family: 'Times New Roman', Times, serif;
+            font-size: 1rem;
+            font-weight: normal;
+            font-style: normal;
             cursor: pointer;
-            transition: all 0.08s ease;
-            box-shadow: 0 6px 0 #000000, 0 8px 15px rgba(0,0,0,0.4);
+            transition: transform 0.07s ease, box-shadow 0.07s ease, background 0.07s ease;
+            box-shadow: 0 5px 0 #000, 0 7px 12px rgba(0,0,0,0.35);
             user-select: none;
+            flex-shrink: 0;
         }
 
-        .key.wide { width: 100px; font-size: 0.75rem; letter-spacing: 1px; }
-        .key.medium { width: 80px; font-size: 0.85rem; }
+        .key.w1 { width: 70px;  font-size: 0.72rem; }
+        .key.w2 { width: 88px;  font-size: 0.72rem; }
+        .key.w3 { width: 148px; font-size: 0.72rem; }
 
         .key.active {
             background: linear-gradient(170deg, #444, #222);
             border-color: #888;
-            transform: translateY(5px);
-            box-shadow: 0 1px 0 #000000, 0 2px 5px rgba(0,0,0,0.3);
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #000, 0 2px 5px rgba(0,0,0,0.3);
         }
 
-        #status {
-            color: #999;
-            font-size: 0.75rem;
-            margin-bottom: 16px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
+        #hint {
             font-family: 'Times New Roman', Times, serif;
-            font-weight: normal;
+            font-size: 0.68rem;
+            color: #aaa;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
         }
     </style>
 </head>
 <body>
 
-<div id="sentence-canvas">
+<div id="canvas">
     <div class="sentence-line" id="current-line"></div>
 </div>
 
-<p id="status">press keys to compose · enter = new line · esc = clear all</p>
+<div id="controls">
+    <div class="ctrl-group">
+        <span class="ctrl-label">Scale</span>
+        <select id="scale-select">
+            <option value="standard">Standard</option>
+            <option value="blues">Blues</option>
+            <option value="jazz">Jazz</option>
+            <option value="pentatonic">Pentatonic</option>
+            <option value="chromatic">Chromatic</option>
+        </select>
+    </div>
+    <div class="ctrl-group">
+        <span class="ctrl-label">Sound</span>
+        <select id="synth-select">
+            <option value="synth">Synth</option>
+            <option value="am">AM Synth</option>
+            <option value="fm">FM Synth</option>
+            <option value="membrane">Membrane</option>
+            <option value="pluck">Pluck</option>
+        </select>
+    </div>
+    <div class="ctrl-group">
+        <span class="ctrl-label">Reverb</span>
+        <button class="toggle-btn" id="reverb-btn">Off</button>
+    </div>
+    <div class="ctrl-group">
+        <span class="ctrl-label">Delay</span>
+        <button class="toggle-btn" id="delay-btn">Off</button>
+    </div>
+</div>
+
+<p id="hint">enter = new line · esc = clear · backspace = undo</p>
 
 <div id="keyboard">
     <div class="key-row">
-        <div class="key" id="key-q">Q</div>
-        <div class="key" id="key-w">W</div>
-        <div class="key" id="key-e">E</div>
-        <div class="key" id="key-r">R</div>
-        <div class="key" id="key-t">T</div>
-        <div class="key" id="key-y">Y</div>
-        <div class="key" id="key-u">U</div>
-        <div class="key" id="key-i">I</div>
-        <div class="key" id="key-o">O</div>
-        <div class="key" id="key-p">P</div>
+        <div class="key" id="key-q" data-key="q">Q</div>
+        <div class="key" id="key-w" data-key="w">W</div>
+        <div class="key" id="key-e" data-key="e">E</div>
+        <div class="key" id="key-r" data-key="r">R</div>
+        <div class="key" id="key-t" data-key="t">T</div>
+        <div class="key" id="key-y" data-key="y">Y</div>
+        <div class="key" id="key-u" data-key="u">U</div>
+        <div class="key" id="key-i" data-key="i">I</div>
+        <div class="key" id="key-o" data-key="o">O</div>
+        <div class="key" id="key-p" data-key="p">P</div>
     </div>
     <div class="key-row">
-        <div class="key" id="key-a">A</div>
-        <div class="key" id="key-s">S</div>
-        <div class="key" id="key-d">D</div>
-        <div class="key" id="key-f">F</div>
-        <div class="key" id="key-g">G</div>
-        <div class="key" id="key-h">H</div>
-        <div class="key" id="key-j">J</div>
-        <div class="key" id="key-k">K</div>
-        <div class="key" id="key-l">L</div>
+        <div class="key" id="key-a" data-key="a">A</div>
+        <div class="key" id="key-s" data-key="s">S</div>
+        <div class="key" id="key-d" data-key="d">D</div>
+        <div class="key" id="key-f" data-key="f">F</div>
+        <div class="key" id="key-g" data-key="g">G</div>
+        <div class="key" id="key-h" data-key="h">H</div>
+        <div class="key" id="key-j" data-key="j">J</div>
+        <div class="key" id="key-k" data-key="k">K</div>
+        <div class="key" id="key-l" data-key="l">L</div>
     </div>
     <div class="key-row">
-        <div class="key" id="key-z">Z</div>
-        <div class="key" id="key-x">X</div>
-        <div class="key" id="key-c">C</div>
-        <div class="key" id="key-v">V</div>
-        <div class="key" id="key-b">B</div>
-        <div class="key" id="key-n">N</div>
-        <div class="key" id="key-m">M</div>
+        <div class="key w1" id="key-z" data-key="z">Z</div>
+        <div class="key" id="key-x" data-key="x">X</div>
+        <div class="key" id="key-c" data-key="c">C</div>
+        <div class="key" id="key-v" data-key="v">V</div>
+        <div class="key" id="key-b" data-key="b">B</div>
+        <div class="key" id="key-n" data-key="n">N</div>
+        <div class="key" id="key-m" data-key="m">M</div>
+        <div class="key w1" id="key-backspace" data-action="backspace">⌫</div>
     </div>
     <div class="key-row">
-        <div class="key wide" id="key-backspace">⌫ Back</div>
-        <div class="key wide" id="key-space">Space</div>
-        <div class="key medium" id="key-comma">,</div>
-        <div class="key medium" id="key-period">.</div>
-        <div class="key wide" id="key-enter">Enter</div>
+        <div class="key w1" id="key-comma"  data-action="comma">,</div>
+        <div class="key w1" id="key-period" data-action="period">.</div>
+        <div class="key w3" id="key-space"  data-action="space">Space</div>
+        <div class="key w1" id="key-enter"  data-action="enter">↵</div>
+        <div class="key w1" id="key-esc"    data-action="esc">Esc</div>
     </div>
 </div>
 
 <script>
-    const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+// ── SCALES ──────────────────────────────────────────────
+const scales = {
+    standard:   ['C4','D4','E4','F4','G4','A4','B4','C5','D5','E5','F5','G5','A5','B5','C6','D6','E6','F6','G6','A6','B6','C7','D7','E7','F7','G7'],
+    blues:      ['C4','Eb4','F4','Gb4','G4','Bb4','C5','Eb5','F5','Gb5','G5','Bb5','C6','Eb6','F6','Gb6','G6','Bb6','C7','Eb7','F7','Gb7','G7','Bb7','C4','D4'],
+    jazz:       ['C4','D4','Eb4','E4','G4','A4','Bb4','C5','D5','Eb5','E5','G5','A5','Bb5','C6','D6','Eb6','E6','G6','A6','Bb6','C7','D7','Eb7','E7','G7'],
+    pentatonic: ['C4','D4','E4','G4','A4','C5','D5','E5','G5','A5','C6','D6','E6','G6','A6','C7','D7','E7','G7','A7','C4','D4','E4','G4','A4','C5'],
+    chromatic:  ['C4','C#4','D4','D#4','E4','F4','F#4','G4','G#4','A4','A#4','B4','C5','C#5','D5','D#5','E5','F5','F#5','G5','G#5','A5','A#5','B5']
+};
 
-    const keyNotes = {
-        'a': 'C4', 'b': 'D4', 'c': 'E4', 'd': 'F4',
-        'e': 'G4', 'f': 'A4', 'g': 'B4', 'h': 'C5',
-        'i': 'D5', 'j': 'E5', 'k': 'F5', 'l': 'G5',
-        'm': 'A5', 'n': 'B5', 'o': 'C6', 'p': 'D6',
-        'q': 'E6', 'r': 'F6', 's': 'G6', 't': 'A6',
-        'u': 'B6', 'v': 'C7', 'w': 'D7', 'x': 'E7',
-        'y': 'F7', 'z': 'G7'
-    };
+const KEYS = 'abcdefghijklmnopqrstuvwxyz'.split('');
+let currentScale = 'standard';
 
-    let currentLine = document.getElementById('current-line');
-    let canvas = document.getElementById('sentence-canvas');
-    let settledKeys = []; // track for backspace
+function getKeyNotes() {
+    const s = scales[currentScale];
+    const map = {};
+    KEYS.forEach((k, i) => { map[k] = s[i % s.length]; });
+    return map;
+}
 
-    function addSettledKey(label, type = 'letter') {
-        const el = document.createElement('div');
-        el.className = 'settled-key';
-        if (type === 'space') el.classList.add('space-key');
-        if (type === 'punct') el.classList.add('punct-key');
-        el.textContent = label;
-        currentLine.appendChild(el);
+// ── AUDIO SETUP ─────────────────────────────────────────
+const reverb = new Tone.Reverb({ decay: 3, wet: 0 }).toDestination();
+const delay  = new Tone.FeedbackDelay({ delayTime: '8n', feedback: 0.3, wet: 0 }).connect(reverb);
+let reverbOn = false;
+let delayOn  = false;
+let currentSynthType = 'synth';
 
-        // Trigger visible transition
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => el.classList.add('visible'));
-        });
-
-        settledKeys.push(el);
-        return el;
+function buildSynth(type) {
+    if (window._synth) {
+        try { window._synth.dispose(); } catch(e) {}
     }
-
-    function animateFlyingKey(key, label) {
-        const keyEl = document.getElementById('key-' + key);
-        if (!keyEl) return;
-
-        const rect = keyEl.getBoundingClientRect();
-
-        // Create flying keycap starting at keyboard key position
-        const flyer = document.createElement('div');
-        flyer.className = 'flying-key';
-        flyer.textContent = label;
-        flyer.style.left = rect.left + 'px';
-        flyer.style.top = rect.top + 'px';
-        flyer.style.width = rect.width + 'px';
-        flyer.style.height = rect.height + 'px';
-        document.body.appendChild(flyer);
-
-        // After brief pause, fly it to sentence area and shrink
-        setTimeout(() => {
-            // Add a placeholder to get target position
-            const placeholder = addSettledKey(label);
-            const targetRect = placeholder.getBoundingClientRect();
-
-            flyer.style.left = targetRect.left + 'px';
-            flyer.style.top = targetRect.top + 'px';
-            flyer.style.width = '48px';
-            flyer.style.height = '48px';
-            flyer.style.fontSize = '1rem';
-
-            // Once it arrives, remove flyer and show settled key
-            setTimeout(() => {
-                flyer.remove();
-            }, 420);
-        }, 80);
+    let s;
+    if (type === 'pluck') {
+        // PluckSynth doesn't support PolySynth well — use multiple instances
+        s = {
+            _type: 'pluck',
+            _instances: [],
+            triggerAttack(note) {
+                const p = new Tone.PluckSynth().connect(delay);
+                p.triggerAttack(note);
+                this._instances.push(p);
+                // Auto-clean after 3s
+                setTimeout(() => {
+                    try { p.dispose(); } catch(e) {}
+                    this._instances = this._instances.filter(x => x !== p);
+                }, 3000);
+            },
+            triggerRelease() {}, // pluck is self-releasing
+            releaseAll() {
+                this._instances.forEach(p => { try { p.dispose(); } catch(e) {} });
+                this._instances = [];
+            },
+            dispose() { this.releaseAll(); }
+        };
+    } else {
+        switch(type) {
+            case 'am':       s = new Tone.PolySynth(Tone.AMSynth); break;
+            case 'fm':       s = new Tone.PolySynth(Tone.FMSynth); break;
+            case 'membrane': s = new Tone.PolySynth(Tone.MembraneSynth); break;
+            default:         s = new Tone.PolySynth(Tone.Synth); break;
+        }
+        s.connect(delay);
     }
+    window._synth = s;
+    return s;
+}
 
-    function newLine() {
+let synth = buildSynth('synth');
+
+// ── CONTROLS ────────────────────────────────────────────
+document.getElementById('scale-select').addEventListener('change', e => {
+    currentScale = e.target.value;
+});
+
+document.getElementById('synth-select').addEventListener('change', e => {
+    currentSynthType = e.target.value;
+    synth = buildSynth(e.target.value);
+});
+
+document.getElementById('reverb-btn').addEventListener('click', () => {
+    reverbOn = !reverbOn;
+    reverb.wet.value = reverbOn ? 0.5 : 0;
+    const btn = document.getElementById('reverb-btn');
+    btn.textContent = reverbOn ? 'On' : 'Off';
+    btn.classList.toggle('on', reverbOn);
+});
+
+document.getElementById('delay-btn').addEventListener('click', () => {
+    delayOn = !delayOn;
+    delay.wet.value = delayOn ? 0.4 : 0;
+    const btn = document.getElementById('delay-btn');
+    btn.textContent = delayOn ? 'On' : 'Off';
+    btn.classList.toggle('on', delayOn);
+});
+
+// ── CANVAS LOGIC ────────────────────────────────────────
+const canvasEl = document.getElementById('canvas');
+let currentLine = document.getElementById('current-line');
+let settledKeys = [];
+
+function addSettledKey(label, type = 'letter') {
+    const el = document.createElement('div');
+    el.className = 'settled-key';
+    if (type === 'space') el.classList.add('space-key');
+    if (type === 'punct') el.classList.add('punct-key');
+    el.textContent = label;
+    currentLine.appendChild(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('visible')));
+    settledKeys.push(el);
+    return el;
+}
+
+function animateFlyingKey(key, label) {
+    const keyEl = document.getElementById('key-' + key);
+    if (!keyEl) return;
+    const rect = keyEl.getBoundingClientRect();
+
+    const flyer = document.createElement('div');
+    flyer.className = 'flying-key';
+    flyer.textContent = label;
+    flyer.style.cssText = `left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px;font-size:1rem;`;
+    document.body.appendChild(flyer);
+
+    setTimeout(() => {
+        const placeholder = addSettledKey(label, 'letter');
+        const targetRect = placeholder.getBoundingClientRect();
+        flyer.style.left      = targetRect.left + 'px';
+        flyer.style.top       = targetRect.top + 'px';
+        flyer.style.width     = '68px';
+        flyer.style.height    = '68px';
+        flyer.style.fontSize  = '1.6rem';
+        flyer.style.borderRadius = '10px';
+        setTimeout(() => flyer.remove(), 400);
+    }, 60);
+}
+
+function newLine() {
+    flashKey('key-enter');
+    currentLine = document.createElement('div');
+    currentLine.className = 'sentence-line';
+    canvasEl.appendChild(currentLine);
+    settledKeys = [];
+    canvasEl.scrollTop = canvasEl.scrollHeight;
+}
+
+function clearAll() {
+    flashKey('key-esc');
+    canvasEl.querySelectorAll('.sentence-line').forEach(line => {
+        line.classList.add('clearing');
+        setTimeout(() => line.remove(), 500);
+    });
+    setTimeout(() => {
         currentLine = document.createElement('div');
         currentLine.className = 'sentence-line';
-        canvas.appendChild(currentLine);
+        canvasEl.appendChild(currentLine);
         settledKeys = [];
+    }, 520);
+    try { synth.releaseAll(); } catch(e) {}
+}
+
+function handleBackspace() {
+    flashKey('key-backspace');
+    if (settledKeys.length > 0) {
+        const last = settledKeys.pop();
+        last.classList.remove('visible');
+        setTimeout(() => last.remove(), 280);
     }
+}
 
-    function clearAll() {
-        const lines = canvas.querySelectorAll('.sentence-line');
-        lines.forEach(line => {
-            line.classList.add('clearing');
-            setTimeout(() => line.remove(), 600);
-        });
+function flashKey(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('active');
+    setTimeout(() => el.classList.remove('active'), 140);
+}
 
+// ── PLAY A LETTER KEY ───────────────────────────────────
+async function playKey(key) {
+    await Tone.start();
+    const keyNotes = getKeyNotes();
+    if (!keyNotes[key]) return;
+
+    try { synth.triggerAttack(keyNotes[key]); } catch(er) {}
+    const keyEl = document.getElementById('key-' + key);
+    if (keyEl) keyEl.classList.add('active');
+    animateFlyingKey(key, key.toUpperCase());
+
+    // For pluck, release immediately (self-sustaining)
+    if (currentSynthType === 'pluck') {
         setTimeout(() => {
-            currentLine = document.createElement('div');
-            currentLine.className = 'sentence-line';
-            currentLine.id = 'current-line';
-            canvas.appendChild(currentLine);
-            settledKeys = [];
-        }, 650);
-    }
-
-    function handleBackspace() {
-        if (settledKeys.length > 0) {
-            const last = settledKeys.pop();
-            last.classList.remove('visible');
-            setTimeout(() => last.remove(), 300);
-        }
-    }
-
-    document.addEventListener('keydown', async (e) => {
-        if (e.repeat) return;
-        await Tone.start();
-        const key = e.key.toLowerCase();
-
-        if (e.key === 'Escape') {
-            clearAll();
-            synth.releaseAll();
-            return;
-        }
-
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const enterEl = document.getElementById('key-enter');
-            if (enterEl) { enterEl.classList.add('active'); setTimeout(() => enterEl.classList.remove('active'), 150); }
-            newLine();
-            return;
-        }
-
-        if (e.key === 'Backspace') {
-            e.preventDefault();
-            handleBackspace();
-            const bsEl = document.getElementById('key-backspace');
-            if (bsEl) { bsEl.classList.add('active'); setTimeout(() => bsEl.classList.remove('active'), 150); }
-            return;
-        }
-
-        if (e.key === ' ') {
-            e.preventDefault();
-            addSettledKey('', 'space');
-            const spEl = document.getElementById('key-space');
-            if (spEl) { spEl.classList.add('active'); setTimeout(() => spEl.classList.remove('active'), 150); }
-            return;
-        }
-
-        if (e.key === ',') {
-            addSettledKey(',', 'punct');
-            const coEl = document.getElementById('key-comma');
-            if (coEl) { coEl.classList.add('active'); setTimeout(() => coEl.classList.remove('active'), 150); }
-            return;
-        }
-
-        if (e.key === '.') {
-            addSettledKey('.', 'punct');
-            const peEl = document.getElementById('key-period');
-            if (peEl) { peEl.classList.add('active'); setTimeout(() => peEl.classList.remove('active'), 150); }
-            return;
-        }
-
-        if (keyNotes[key]) {
-            synth.triggerAttack(keyNotes[key]);
-            const keyEl = document.getElementById('key-' + key);
-            if (keyEl) keyEl.classList.add('active');
-            animateFlyingKey(key, key.toUpperCase());
-        }
-    });
-
-    document.addEventListener('keyup', (e) => {
-        const key = e.key.toLowerCase();
-        if (keyNotes[key]) {
-            synth.triggerRelease(keyNotes[key]);
-            const keyEl = document.getElementById('key-' + key);
             if (keyEl) keyEl.classList.remove('active');
-        }
+        }, 200);
+    }
+}
+
+function releaseKey(key) {
+    const keyNotes = getKeyNotes();
+    if (!keyNotes[key]) return;
+    if (currentSynthType !== 'pluck') {
+        try { synth.triggerRelease(keyNotes[key]); } catch(er) {}
+    }
+    const keyEl = document.getElementById('key-' + key);
+    if (keyEl) keyEl.classList.remove('active');
+}
+
+// ── MOUSE CLICK ON KEYS ─────────────────────────────────
+document.querySelectorAll('.key[data-key]').forEach(el => {
+    el.addEventListener('mousedown', async () => {
+        await Tone.start();
+        playKey(el.dataset.key);
     });
+    el.addEventListener('mouseup', () => {
+        releaseKey(el.dataset.key);
+    });
+    el.addEventListener('mouseleave', () => {
+        releaseKey(el.dataset.key);
+    });
+});
+
+document.querySelectorAll('.key[data-action]').forEach(el => {
+    el.addEventListener('mousedown', async () => {
+        await Tone.start();
+        const action = el.dataset.action;
+        if (action === 'backspace') handleBackspace();
+        else if (action === 'enter')  newLine();
+        else if (action === 'esc')    clearAll();
+        else if (action === 'space')  { addSettledKey('', 'space'); flashKey('key-space'); }
+        else if (action === 'comma')  { addSettledKey(',', 'punct'); flashKey('key-comma'); }
+        else if (action === 'period') { addSettledKey('.', 'punct'); flashKey('key-period'); }
+    });
+});
+
+// ── KEYBOARD INPUT ──────────────────────────────────────
+document.addEventListener('keydown', async (e) => {
+    if (e.repeat) return;
+    await Tone.start();
+
+    if (e.key === 'Escape')    { clearAll(); return; }
+    if (e.key === 'Enter')     { e.preventDefault(); newLine(); return; }
+    if (e.key === 'Backspace') { e.preventDefault(); handleBackspace(); return; }
+    if (e.key === ' ')         { e.preventDefault(); addSettledKey('', 'space'); flashKey('key-space'); return; }
+    if (e.key === ',')         { addSettledKey(',', 'punct'); flashKey('key-comma'); return; }
+    if (e.key === '.')         { addSettledKey('.', 'punct'); flashKey('key-period'); return; }
+
+    const key = e.key.toLowerCase();
+    if ('abcdefghijklmnopqrstuvwxyz'.includes(key)) playKey(key);
+});
+
+document.addEventListener('keyup', (e) => {
+    const key = e.key.toLowerCase();
+    if ('abcdefghijklmnopqrstuvwxyz'.includes(key)) releaseKey(key);
+});
 </script>
 </body>
 </html>
