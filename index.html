@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Instrument</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #f0f0f0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Times New Roman', Times, serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 60px;
+        }
+
+        /* Canvas where sentences form */
+        #sentence-canvas {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            bottom: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: 30px 40px;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .sentence-line {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        /* Each settled keycap in a sentence */
+        .settled-key {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(170deg, #2a2a2a, #111111);
+            border: 1px solid #555;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: normal;
+            font-family: 'Times New Roman', Times, serif;
+            box-shadow: 0 4px 0 #000, 0 6px 10px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .settled-key.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .settled-key.space-key {
+            width: 24px;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+
+        .settled-key.punct-key {
+            width: 36px;
+        }
+
+        /* ESC fade out */
+        .sentence-line.clearing .settled-key {
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        /* Flying keycap animation */
+        .flying-key {
+            position: fixed;
+            width: 62px;
+            height: 62px;
+            background: linear-gradient(170deg, #2a2a2a, #111111);
+            border: 1px solid #555;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: normal;
+            font-family: 'Times New Roman', Times, serif;
+            pointer-events: none;
+            box-shadow: 0 6px 0 #000, 0 8px 15px rgba(0,0,0,0.4);
+            z-index: 200;
+            transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        top 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        width 0.4s ease,
+                        height 0.4s ease,
+                        font-size 0.4s ease;
+        }
+
+        /* Keyboard */
+        #keyboard {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .key-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .key {
+            width: 62px;
+            height: 62px;
+            background: linear-gradient(170deg, #2a2a2a, #111111);
+            border: 1px solid #444;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: normal;
+            font-family: 'Times New Roman', Times, serif;
+            cursor: pointer;
+            transition: all 0.08s ease;
+            box-shadow: 0 6px 0 #000000, 0 8px 15px rgba(0,0,0,0.4);
+            user-select: none;
+        }
+
+        .key.wide { width: 100px; font-size: 0.75rem; letter-spacing: 1px; }
+        .key.medium { width: 80px; font-size: 0.85rem; }
+
+        .key.active {
+            background: linear-gradient(170deg, #444, #222);
+            border-color: #888;
+            transform: translateY(5px);
+            box-shadow: 0 1px 0 #000000, 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        #status {
+            color: #999;
+            font-size: 0.75rem;
+            margin-bottom: 16px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+
+<div id="sentence-canvas">
+    <div class="sentence-line" id="current-line"></div>
+</div>
+
+<p id="status">press keys to compose · enter = new line · esc = clear all</p>
+
+<div id="keyboard">
+    <div class="key-row">
+        <div class="key" id="key-q">Q</div>
+        <div class="key" id="key-w">W</div>
+        <div class="key" id="key-e">E</div>
+        <div class="key" id="key-r">R</div>
+        <div class="key" id="key-t">T</div>
+        <div class="key" id="key-y">Y</div>
+        <div class="key" id="key-u">U</div>
+        <div class="key" id="key-i">I</div>
+        <div class="key" id="key-o">O</div>
+        <div class="key" id="key-p">P</div>
+    </div>
+    <div class="key-row">
+        <div class="key" id="key-a">A</div>
+        <div class="key" id="key-s">S</div>
+        <div class="key" id="key-d">D</div>
+        <div class="key" id="key-f">F</div>
+        <div class="key" id="key-g">G</div>
+        <div class="key" id="key-h">H</div>
+        <div class="key" id="key-j">J</div>
+        <div class="key" id="key-k">K</div>
+        <div class="key" id="key-l">L</div>
+    </div>
+    <div class="key-row">
+        <div class="key" id="key-z">Z</div>
+        <div class="key" id="key-x">X</div>
+        <div class="key" id="key-c">C</div>
+        <div class="key" id="key-v">V</div>
+        <div class="key" id="key-b">B</div>
+        <div class="key" id="key-n">N</div>
+        <div class="key" id="key-m">M</div>
+    </div>
+    <div class="key-row">
+        <div class="key wide" id="key-backspace">⌫ Back</div>
+        <div class="key wide" id="key-space">Space</div>
+        <div class="key medium" id="key-comma">,</div>
+        <div class="key medium" id="key-period">.</div>
+        <div class="key wide" id="key-enter">Enter</div>
+    </div>
+</div>
+
+<script>
+    const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+
+    const keyNotes = {
+        'a': 'C4', 'b': 'D4', 'c': 'E4', 'd': 'F4',
+        'e': 'G4', 'f': 'A4', 'g': 'B4', 'h': 'C5',
+        'i': 'D5', 'j': 'E5', 'k': 'F5', 'l': 'G5',
+        'm': 'A5', 'n': 'B5', 'o': 'C6', 'p': 'D6',
+        'q': 'E6', 'r': 'F6', 's': 'G6', 't': 'A6',
+        'u': 'B6', 'v': 'C7', 'w': 'D7', 'x': 'E7',
+        'y': 'F7', 'z': 'G7'
+    };
+
+    let currentLine = document.getElementById('current-line');
+    let canvas = document.getElementById('sentence-canvas');
+    let settledKeys = []; // track for backspace
+
+    function addSettledKey(label, type = 'letter') {
+        const el = document.createElement('div');
+        el.className = 'settled-key';
+        if (type === 'space') el.classList.add('space-key');
+        if (type === 'punct') el.classList.add('punct-key');
+        el.textContent = label;
+        currentLine.appendChild(el);
+
+        // Trigger visible transition
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => el.classList.add('visible'));
+        });
+
+        settledKeys.push(el);
+        return el;
+    }
+
+    function animateFlyingKey(key, label) {
+        const keyEl = document.getElementById('key-' + key);
+        if (!keyEl) return;
+
+        const rect = keyEl.getBoundingClientRect();
+
+        // Create flying keycap starting at keyboard key position
+        const flyer = document.createElement('div');
+        flyer.className = 'flying-key';
+        flyer.textContent = label;
+        flyer.style.left = rect.left + 'px';
+        flyer.style.top = rect.top + 'px';
+        flyer.style.width = rect.width + 'px';
+        flyer.style.height = rect.height + 'px';
+        document.body.appendChild(flyer);
+
+        // After brief pause, fly it to sentence area and shrink
+        setTimeout(() => {
+            // Add a placeholder to get target position
+            const placeholder = addSettledKey(label);
+            const targetRect = placeholder.getBoundingClientRect();
+
+            flyer.style.left = targetRect.left + 'px';
+            flyer.style.top = targetRect.top + 'px';
+            flyer.style.width = '48px';
+            flyer.style.height = '48px';
+            flyer.style.fontSize = '1rem';
+
+            // Once it arrives, remove flyer and show settled key
+            setTimeout(() => {
+                flyer.remove();
+            }, 420);
+        }, 80);
+    }
+
+    function newLine() {
+        currentLine = document.createElement('div');
+        currentLine.className = 'sentence-line';
+        canvas.appendChild(currentLine);
+        settledKeys = [];
+    }
+
+    function clearAll() {
+        const lines = canvas.querySelectorAll('.sentence-line');
+        lines.forEach(line => {
+            line.classList.add('clearing');
+            setTimeout(() => line.remove(), 600);
+        });
+
+        setTimeout(() => {
+            currentLine = document.createElement('div');
+            currentLine.className = 'sentence-line';
+            currentLine.id = 'current-line';
+            canvas.appendChild(currentLine);
+            settledKeys = [];
+        }, 650);
+    }
+
+    function handleBackspace() {
+        if (settledKeys.length > 0) {
+            const last = settledKeys.pop();
+            last.classList.remove('visible');
+            setTimeout(() => last.remove(), 300);
+        }
+    }
+
+    document.addEventListener('keydown', async (e) => {
+        if (e.repeat) return;
+        await Tone.start();
+        const key = e.key.toLowerCase();
+
+        if (e.key === 'Escape') {
+            clearAll();
+            synth.releaseAll();
+            return;
+        }
+
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const enterEl = document.getElementById('key-enter');
+            if (enterEl) { enterEl.classList.add('active'); setTimeout(() => enterEl.classList.remove('active'), 150); }
+            newLine();
+            return;
+        }
+
+        if (e.key === 'Backspace') {
+            e.preventDefault();
+            handleBackspace();
+            const bsEl = document.getElementById('key-backspace');
+            if (bsEl) { bsEl.classList.add('active'); setTimeout(() => bsEl.classList.remove('active'), 150); }
+            return;
+        }
+
+        if (e.key === ' ') {
+            e.preventDefault();
+            addSettledKey('', 'space');
+            const spEl = document.getElementById('key-space');
+            if (spEl) { spEl.classList.add('active'); setTimeout(() => spEl.classList.remove('active'), 150); }
+            return;
+        }
+
+        if (e.key === ',') {
+            addSettledKey(',', 'punct');
+            const coEl = document.getElementById('key-comma');
+            if (coEl) { coEl.classList.add('active'); setTimeout(() => coEl.classList.remove('active'), 150); }
+            return;
+        }
+
+        if (e.key === '.') {
+            addSettledKey('.', 'punct');
+            const peEl = document.getElementById('key-period');
+            if (peEl) { peEl.classList.add('active'); setTimeout(() => peEl.classList.remove('active'), 150); }
+            return;
+        }
+
+        if (keyNotes[key]) {
+            synth.triggerAttack(keyNotes[key]);
+            const keyEl = document.getElementById('key-' + key);
+            if (keyEl) keyEl.classList.add('active');
+            animateFlyingKey(key, key.toUpperCase());
+        }
+    });
+
+    document.addEventListener('keyup', (e) => {
+        const key = e.key.toLowerCase();
+        if (keyNotes[key]) {
+            synth.triggerRelease(keyNotes[key]);
+            const keyEl = document.getElementById('key-' + key);
+            if (keyEl) keyEl.classList.remove('active');
+        }
+    });
+</script>
+</body>
+</html>
