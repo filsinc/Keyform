@@ -516,7 +516,23 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
           <div class="instr-card" onclick="selectInstr('bell',this)"><div class="instr-icon">🔔</div><div class="instr-info"><div class="instr-name">BELL</div><div class="instr-sub">bright · metallic</div></div></div>
           <div class="instr-card" onclick="selectInstr('bass',this)"><div class="instr-icon">🎸</div><div class="instr-info"><div class="instr-name">BASS</div><div class="instr-sub">deep · low</div></div></div>
           <div class="instr-card" onclick="selectInstr('organ',this)"><div class="instr-icon">⛪</div><div class="instr-info"><div class="instr-name">ORGAN</div><div class="instr-sub">church · sustained</div></div></div>
-          <div class="instr-card" onclick="selectInstr('voice',this)" style="border-color:rgba(255,180,100,0.4)"><div class="instr-icon">🎤</div><div class="instr-info"><div class="instr-name">MY VOICE</div><div class="instr-sub">fils · custom</div></div></div>
+          <div class="instr-card" onclick="selectInstr('voice',this)" style="border-color:rgba(255,180,100,0.5)"><div class="instr-icon" style="width:22px;height:22px;"><svg width="22" height="22" viewBox="0 0 22 22" style="image-rendering:pixelated;flex-shrink:0;">
+<rect x="6" y="1" width="10" height="1" fill="#111"/><rect x="5" y="2" width="12" height="1" fill="#111"/>
+<rect x="4" y="3" width="14" height="1" fill="#111"/><rect x="4" y="4" width="14" height="1" fill="#111"/>
+<rect x="3" y="5" width="3" height="6" fill="#111"/><rect x="16" y="5" width="3" height="6" fill="#111"/>
+<rect x="6" y="5" width="10" height="1" fill="#8B5E3C"/><rect x="5" y="6" width="12" height="1" fill="#9B6A45"/>
+<rect x="5" y="7" width="3" height="1" fill="#fff"/><rect x="8" y="7" width="1" height="1" fill="#111"/><rect x="9" y="7" width="4" height="1" fill="#9B6A45"/><rect x="13" y="7" width="3" height="1" fill="#fff"/><rect x="12" y="7" width="1" height="1" fill="#111"/>
+<rect x="5" y="8" width="12" height="1" fill="#9B6A45"/>
+<rect x="6" y="9" width="4" height="1" fill="#7A5030"/><rect x="12" y="9" width="4" height="1" fill="#7A5030"/>
+<rect x="7" y="10" width="8" height="1" fill="#4a2010"/>
+<rect x="7" y="11" width="8" height="2" fill="#e8e0d0"/>
+<rect x="5" y="11" width="12" height="1" fill="#111"/>
+<rect x="4" y="12" width="14" height="1" fill="#111"/>
+<rect x="5" y="13" width="3" height="4" fill="#111"/><rect x="14" y="13" width="3" height="4" fill="#111"/>
+<rect x="8" y="15" width="6" height="2" fill="#111"/>
+<rect x="9" y="17" width="4" height="2" fill="#111"/>
+<rect x="7" y="19" width="8" height="2" fill="#111"/>
+</svg></div><div class="instr-info"><div class="instr-name">FILSTRUMENT</div><div class="instr-sub">fils · voice</div></div></div>
         </div>
         <div id="instr-status" style="font-family:'Press Start 2P',monospace;font-size:0.3rem;color:var(--text3);margin-top:3px;">Loading...</div>
       </div>
@@ -922,6 +938,28 @@ const WC={
   'TIME':{notes:['C3','G3','C4','G4','C5'],color:'rgba(160,180,220,0.25)',label:'TIME',anim:'ripple'},
   'VOID':{notes:['B2','F3','Ab3','D4'],color:'rgba(2,2,8,0.48)',label:'VOID',anim:'void'},
   'FILS':{notes:['F3','A3','C4','E4','G4'],color:'rgba(255,210,80,0.3)',label:'FILS',anim:'stars'},
+  'MACHINE':{notes:['C3','Eb3','Gb3','A3','C4'],color:'rgba(80,80,120,0.35)',label:'MACHINE',anim:'void'},
+  'LOL':{notes:['C4','E4','G4','C5'],color:'rgba(255,230,100,0.28)',label:'LOL',anim:'hearts'},
+  'LMAO':{notes:['C4','E4','G4','C5'],color:'rgba(255,220,80,0.28)',label:'LMAO',anim:'hearts'},
+  'LAUGH':{notes:['C4','E4','G4','C5'],color:'rgba(255,225,80,0.28)',label:'LAUGH',anim:'hearts'},
+  'FUNNY':{notes:['C4','E4','G4','C5'],color:'rgba(255,220,100,0.28)',label:'FUNNY',anim:'hearts'},
+  'HA':{notes:['C4','E4','G4'],color:'rgba(255,230,120,0.25)',label:'HA',anim:'hearts'},
+  'HAHA':{notes:['C4','E4','G4','C5'],color:'rgba(255,225,90,0.25)',label:'HAHA',anim:'hearts'},
+  'AGENDA':{notes:['C3','E3','G3','B3'],color:'rgba(180,200,255,0.25)',label:'AGENDA',anim:'ripple'},
+  'ASEXUAL':{notes:['C3','G3','C4','G4'],color:'rgba(200,200,220,0.25)',label:'ASEXUAL',anim:'soul'},
+  'ASEXUALS':{notes:['C3','G3','C4','G4'],color:'rgba(200,200,220,0.25)',label:'ASEXUALS',anim:'soul'},
+  'BEND':{notes:['D3','F3','Ab3','C4'],color:'rgba(180,160,220,0.25)',label:'BEND',anim:'ripple'},
+  'BISEXUAL':{notes:['D3','F#3','A3','C#4'],color:'rgba(200,160,255,0.28)',label:'BISEXUAL',anim:'hearts'},
+  'CONTROL':{notes:['C3','G3','C4'],color:'rgba(160,160,200,0.28)',label:'CONTROL',anim:'void'},
+  'DELETE':{notes:['C3','Gb3','A3'],color:'rgba(180,60,60,0.28)',label:'DELETE',anim:'void'},
+  'ESCAPE':{notes:['C4','E4','G4','C5'],color:'rgba(160,220,255,0.25)',label:'ESCAPE',anim:'rise'},
+  'GAY':{notes:['C3','E3','A3','C4'],color:'rgba(255,180,200,0.28)',label:'GAY',anim:'hearts'},
+  'GENDER':{notes:['C3','E3','G3','B3'],color:'rgba(200,180,255,0.25)',label:'GENDER',anim:'ripple'},
+  'LESBIAN':{notes:['D3','F#3','A3','D4'],color:'rgba(255,160,200,0.28)',label:'LESBIAN',anim:'hearts'},
+  'LESBIANS':{notes:['D3','F#3','A3','D4'],color:'rgba(255,160,200,0.28)',label:'LESBIANS',anim:'hearts'},
+  'LOVE_ME':{notes:['C3','E3','G3','B3','E4'],color:'rgba(255,140,180,0.3)',label:'LOVE ME',anim:'hearts'},
+  'WHY_ARENT_YOU_GAY':{notes:['C3','Eb3','G3','Bb3'],color:'rgba(200,160,255,0.28)',label:'WHY ARENT YOU GAY',anim:'void'},
+  'ZEN':{notes:['C3','G3','B3','E4'],color:'rgba(180,220,200,0.22)',label:'ZEN',anim:'soul'},
   'KEYANO':{notes:['C3','E3','G3','B3','D4','F#4'],color:'rgba(255,255,255,0.32)',label:'KEYANO',anim:'hearts'},
   'POWER':{notes:['C3','G3','C4','Bb4'],color:'rgba(220,40,40,0.25)',label:'POWER',anim:'rise'},
   'FREE':{notes:['C3','E3','G3','C4','E4'],color:'rgba(80,200,255,0.22)',label:'FREE',anim:'rise'},
@@ -1351,9 +1389,32 @@ const ICFG={
       voiceMap[k]=a;
     });
     // Word sounds
+    const haHaAudio=new Audio(BASE+'HA_HA_HA.mp3');
     const wordSounds={
       'FILS': new Audio(BASE+'FILS.mp3'),
       'MACHINE': new Audio(BASE+'MACHINE.mp3'),
+      'AGENDA': new Audio(BASE+'AGENDA.mp3'),
+      'ASEXUAL': new Audio(BASE+'ASEXUAL.mp3'),
+      'ASEXUALS': new Audio(BASE+'ASEXUALS.mp3'),
+      'BEND': new Audio(BASE+'BEND.mp3'),
+      'BISEXUAL': new Audio(BASE+'BISEXUAL.mp3'),
+      'CONTROL': new Audio(BASE+'CONTROL.mp3'),
+      'DELETE': new Audio(BASE+'DELETE.mp3'),
+      'ESCAPE': new Audio(BASE+'ESCAPE.mp3'),
+      'GAY': new Audio(BASE+'GAY.mp3'),
+      'GENDER': new Audio(BASE+'GENDER.mp3'),
+      'LESBIAN': new Audio(BASE+'LESBIAN.mp3'),
+      'LESBIANS': new Audio(BASE+'LESBIANS.mp3'),
+      'LOVE_ME': new Audio(BASE+'LOVE_ME.mp3'),
+      'WHY_ARENT_YOU_GAY': new Audio(BASE+'WHY_ARENT_YOU_GAY.mp3'),
+      'ZEN': new Audio(BASE+'ZEN.mp3'),
+      // HA_HA_HA mapped to laugh words
+      'LOL': haHaAudio,
+      'LMAO': haHaAudio,
+      'LAUGH': haHaAudio,
+      'FUNNY': haHaAudio,
+      'HA': haHaAudio,
+      'HAHA': haHaAudio,
     };
     return {
       _isRawVoice:true,
