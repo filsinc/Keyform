@@ -604,7 +604,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
           <div class="key w1" id="key-z" data-key="z">Z</div><div class="key" id="key-x" data-key="x">X</div><div class="key" id="key-c" data-key="c">C</div><div class="key" id="key-v" data-key="v">V</div><div class="key" id="key-b" data-key="b">B</div><div class="key" id="key-n" data-key="n">N</div><div class="key" id="key-m" data-key="m">M</div><div class="key w1" id="key-backspace" data-action="backspace">⌫ DEL</div>
         </div>
         <div class="kr">
-          <div class="key w1" id="key-ctrl" data-action="esc" style="font-size:0.45rem;">CTRL</div><div class="key w1" id="key-comma" data-action="comma">,</div><div class="key w1" id="key-period" data-action="period">.</div><div class="key w1" id="key-exclaim" data-action="exclaim">!</div><div class="key w1" id="key-question" data-action="question">?</div><div class="key w3" id="key-space" data-action="space">SPACE</div><div class="key w1" id="key-enter" data-action="enter">↵</div><div class="key w1" id="key-esc" data-action="esc">ESC</div>
+          <div class="key w1" id="key-ctrl" data-action="ctrl" style="font-size:0.45rem;">CTRL</div><div class="key w1" id="key-comma" data-action="comma">,</div><div class="key w1" id="key-period" data-action="period">.</div><div class="key w1" id="key-exclaim" data-action="exclaim">!</div><div class="key w1" id="key-question" data-action="question">?</div><div class="key w3" id="key-space" data-action="space">SPACE</div><div class="key w1" id="key-enter" data-action="enter">↵</div><div class="key w1" id="key-esc" data-action="esc">ESC</div>
         </div>
       </div>
       <div id="kb-hint">ENTER=NEW LINE · ESC=CLEAR · 0-3=OCTAVE · -/= SHIFT OCT · SHIFT=# · CAPS=b</div>
@@ -1380,66 +1380,57 @@ const ICFG={
   'organ':      {build:()=>new Tone.PolySynth(Tone.Synth,{oscillator:{type:'square'},envelope:{attack:0.01,decay:0.01,sustain:1,release:0.05},volume:-7}).connect(reverb)},
       'voice':      {sampler:false,build:()=>{
     setStatus('READY');
-    // Pre-load all letter audio files from GitHub
     const BASE='https://keyano.app/';
-    const voiceMap={};
+    // Use Tone.js Player + PitchShift for true pitch shift without speed change
+    const pitchShift=new Tone.PitchShift(0).connect(reverb);
+    const allFiles={};
+    // Letters
     'abcdefghijklmnopqrstuvwxyz'.split('').forEach(k=>{
-      const a=new Audio(BASE+k+'.mp3');
-      a.preload='auto';
-      voiceMap[k]=a;
+      allFiles[k]=BASE+k+'.mp3';
     });
     // Word sounds
-    const haHaAudio=new Audio(BASE+'HA_HA_HA.mp3');
-    const wordSounds={
-      'FILS': new Audio(BASE+'FILS.mp3'),
-      'MACHINE': new Audio(BASE+'MACHINE.mp3'),
-      'AGENDA': new Audio(BASE+'AGENDA.mp3'),
-      'ASEXUAL': new Audio(BASE+'ASEXUAL.mp3'),
-      'ASEXUALS': new Audio(BASE+'ASEXUALS.mp3'),
-      'BEND': new Audio(BASE+'BEND.mp3'),
-      'BISEXUAL': new Audio(BASE+'BISEXUAL.mp3'),
-      'CONTROL': new Audio(BASE+'CONTROL.mp3'),
-      'DELETE': new Audio(BASE+'DELETE.mp3'),
-      'ESCAPE': new Audio(BASE+'ESCAPE.mp3'),
-      'GAY': new Audio(BASE+'GAY.mp3'),
-      'GENDER': new Audio(BASE+'GENDER.mp3'),
-      'LESBIAN': new Audio(BASE+'LESBIAN.mp3'),
-      'LESBIANS': new Audio(BASE+'LESBIANS.mp3'),
-      'LOVE_ME': new Audio(BASE+'LOVE_ME.mp3'),
-      'WHY_ARENT_YOU_GAY': new Audio(BASE+'WHY_ARENT_YOU_GAY.mp3'),
-      'ZEN': new Audio(BASE+'ZEN.mp3'),
-      // HA_HA_HA mapped to laugh words
-      'LOL': haHaAudio,
-      'LMAO': haHaAudio,
-      'LAUGH': haHaAudio,
-      'FUNNY': haHaAudio,
-      'HA': haHaAudio,
-      'HAHA': haHaAudio,
+    const wordFiles={
+      'FILS':BASE+'FILS.mp3','MACHINE':BASE+'MACHINE.mp3',
+      'AGENDA':BASE+'AGENDA.mp3','ASEXUAL':BASE+'ASEXUAL.mp3',
+      'ASEXUALS':BASE+'ASEXUALS.mp3','BEND':BASE+'BEND.mp3',
+      'BISEXUAL':BASE+'BISEXUAL.mp3','CONTROL':BASE+'CONTROL.mp3',
+      'DELETE':BASE+'DELETE.mp3','ESCAPE':BASE+'ESCAPE.mp3',
+      'GAY':BASE+'GAY.mp3','GENDER':BASE+'GENDER.mp3',
+      'LESBIAN':BASE+'LESBIAN.mp3','LESBIANS':BASE+'LESBIANS.mp3',
+      'LOVE_ME':BASE+'LOVE_ME.mp3','WHY_ARENT_YOU_GAY':BASE+'WHY_ARENT_YOU_GAY.mp3',
+      'ZEN':BASE+'ZEN.mp3',
+      'LOL':BASE+'HA_HA_HA.mp3','LMAO':BASE+'HA_HA_HA.mp3',
+      'LAUGH':BASE+'HA_HA_HA.mp3','FUNNY':BASE+'HA_HA_HA.mp3',
+      'HA':BASE+'HA_HA_HA.mp3','HAHA':BASE+'HA_HA_HA.mp3',
     };
+    function playUrl(url){
+      // Tone.Player for true pitch shift
+      pitchShift.pitch=octShift*12;// semitones = octaves * 12
+      const player=new Tone.Player({url,autostart:false,onload:()=>{
+        player.connect(pitchShift);
+        player.start();
+        // cleanup after done
+        setTimeout(()=>{try{player.dispose();}catch(e){}},5000);
+      }}).connect(pitchShift);
+    }
     return {
       _isRawVoice:true,
-      _wordSounds:wordSounds,
+      _wordSounds:{},// kept for compat
       triggerAttack:(note,time,key)=>{
-        const a=voiceMap[key];if(!a)return;
-        // pitch shift via playbackRate: each octave = 2x or 0.5x speed
-        a.playbackRate=Math.pow(2,octShift);
-        a.currentTime=0;
-        a.play().catch(e=>console.error('play:',e));
+        const url=allFiles[key];if(!url)return;
+        playUrl(url);
       },
       triggerAttackRelease:(note,dur,time,key)=>{
-        const a=voiceMap[key];if(!a)return;
-        a.playbackRate=Math.pow(2,octShift);
-        a.currentTime=0;
-        a.play().catch(e=>console.error('play:',e));
+        const url=allFiles[key];if(!url)return;
+        playUrl(url);
       },
       playWord:(word)=>{
-        const a=wordSounds[word.toUpperCase()];if(!a)return;
-        a.playbackRate=Math.pow(2,octShift);
-        a.currentTime=0;a.play().catch(e=>{});
+        const url=wordFiles[word.toUpperCase()];if(!url)return;
+        playUrl(url);
       },
       triggerRelease:()=>{},
       releaseAll:()=>{},
-      dispose:()=>{}
+      dispose:()=>{try{pitchShift.dispose();}catch(e){}},
     };
   }},
 };
@@ -1548,12 +1539,19 @@ function animFly(key,label,sharp=false,flat=false){
   },55);
 }
 function newLine(){flashK('key-enter');createNewLine();curWord='';}
+function playVoiceAction(word){
+  if(synth&&synth._isRawVoice&&synth.playWord){
+    synth.playWord(word);
+  }
+}
 function clearAll(){
+  playVoiceAction('ESCAPE');
   flashK('key-esc');releaseAll();curWord='';
   canvasEl.querySelectorAll('.s-line').forEach(l=>l.remove());
   createNewLine();settledKeys=[];postData=[];
 }
 function handleBS(){
+  playVoiceAction('DELETE');
   flashK('key-backspace');
   if(curWord.length>0)curWord=curWord.slice(0,-1);
   if(settledKeys.length>0){const l=settledKeys.pop();l.classList.remove('vis');setTimeout(()=>l.remove(),240);postData.pop();}
@@ -2303,7 +2301,7 @@ document.querySelectorAll('.key[data-action]').forEach(el=>{
   el.addEventListener('mousedown',async e=>{
     e.preventDefault();await Tone.start();
     const a=el.dataset.action;
-    if(a==='backspace')handleBS();else if(a==='enter')newLine();else if(a==='esc')clearAll();
+    if(a==='backspace')handleBS();else if(a==='enter')newLine();else if(a==='esc')clearAll();else if(a==='ctrl')playVoiceAction('CONTROL');
     else if(a==='space')handleSpace();else if(a==='comma')handlePunct('comma',',');
     else if(a==='period')handlePunct('period','.');else if(a==='exclaim')handlePunct('exclaim','!');else if(a==='question')handlePunct('question','?');
   });
@@ -2314,6 +2312,7 @@ document.addEventListener('keydown',async e=>{
   if(e.target.tagName==='INPUT')return;
   await Tone.start();
 
+  if(e.key==='Control'){playVoiceAction('CONTROL');return;}
   if(e.key==='Shift'){shiftHeld=true;const h=document.getElementById('kb-hint');if(h)h.textContent='SHIFT: SHARP (#) MODE';return;}
   if(e.key==='CapsLock'){
     capsFlat=!capsFlat;
