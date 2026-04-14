@@ -570,8 +570,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
     <div class="ps">
       <div class="ps-title">OCTAVE</div>
       <div class="sl-wrap">
-        <input type="range" id="oct-sl" min="-3" max="3" value="-1" step="1">
-        <span class="sl-val" id="oct-val">-1</span>
+        <input type="range" id="oct-sl" min="-3" max="3" value="0" step="1">
+        <span class="sl-val" id="oct-val">0</span>
       </div>
     </div>
     <div class="ps">
@@ -607,7 +607,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
           <div class="key w1" id="key-ctrl" data-action="esc" style="font-size:0.45rem;">CTRL</div><div class="key w1" id="key-comma" data-action="comma">,</div><div class="key w1" id="key-period" data-action="period">.</div><div class="key w1" id="key-exclaim" data-action="exclaim">!</div><div class="key w1" id="key-question" data-action="question">?</div><div class="key w3" id="key-space" data-action="space">SPACE</div><div class="key w1" id="key-enter" data-action="enter">↵</div><div class="key w1" id="key-esc" data-action="esc">ESC</div>
         </div>
       </div>
-      <div id="kb-hint">ENTER=NEW LINE · ESC=CLEAR · 1-7=OCTAVE · SHIFT=# · CAPS=b</div>
+      <div id="kb-hint">ENTER=NEW LINE · ESC=CLEAR · 0-3=OCTAVE · -/= SHIFT OCT · SHIFT=# · CAPS=b</div>
     </div>
   </div>
 </div>
@@ -883,7 +883,7 @@ const SCALES={
   chromatic: ['C2','C#2','D2','D#2','E2','F2','F#2','G2','G#2','A2','A#2','B2','C3','C#3','D3','D#3','E3','F3','F#3','G3','G#3','A3','A#3','B3','C4','C#4']
 };
 const LKEYS='abcdefghijklmnopqrstuvwxyz'.split('');
-let curScale='standard',octShift=-1,shiftHeld=false,capsFlat=false;
+let curScale='standard',octShift=0,shiftHeld=false,capsFlat=false;
 
 function shiftNote(n,s){
   const N=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
@@ -1421,16 +1421,20 @@ const ICFG={
       _wordSounds:wordSounds,
       triggerAttack:(note,time,key)=>{
         const a=voiceMap[key];if(!a)return;
+        // pitch shift via playbackRate: each octave = 2x or 0.5x speed
+        a.playbackRate=Math.pow(2,octShift);
         a.currentTime=0;
         a.play().catch(e=>console.error('play:',e));
       },
       triggerAttackRelease:(note,dur,time,key)=>{
         const a=voiceMap[key];if(!a)return;
+        a.playbackRate=Math.pow(2,octShift);
         a.currentTime=0;
         a.play().catch(e=>console.error('play:',e));
       },
       playWord:(word)=>{
         const a=wordSounds[word.toUpperCase()];if(!a)return;
+        a.playbackRate=Math.pow(2,octShift);
         a.currentTime=0;a.play().catch(e=>{});
       },
       triggerRelease:()=>{},
@@ -2343,9 +2347,24 @@ document.addEventListener('keydown',async e=>{
   if(e.key==='Backspace'){e.preventDefault();handleBS();return;}
   if(e.key===' '){e.preventDefault();handleSpace();return;}
   if(!shiftHeld){
-    const OCT_MAP={'1':-3,'2':-2,'3':-1,'4':0,'5':1,'6':2,'7':3};
+    const OCT_MAP={'0':0,'1':1,'2':2,'3':3};
     if(OCT_MAP[e.key]!==undefined){
       releaseAll();octShift=OCT_MAP[e.key];
+      document.getElementById('oct-sl').value=octShift;
+      document.getElementById('oct-val').textContent=octShift>=0?'+'+octShift:String(octShift);
+      const t=document.getElementById('oct-toast');t.textContent='OCT '+(octShift>=0?'+':'')+octShift;
+      t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),1000);return;
+    }
+    // - key = octave down, = key = octave up
+    if(e.key==='-'){
+      releaseAll();octShift=Math.max(-3,octShift-1);
+      document.getElementById('oct-sl').value=octShift;
+      document.getElementById('oct-val').textContent=octShift>=0?'+'+octShift:String(octShift);
+      const t=document.getElementById('oct-toast');t.textContent='OCT '+(octShift>=0?'+':'')+octShift;
+      t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),1000);return;
+    }
+    if(e.key==='='){
+      releaseAll();octShift=Math.min(3,octShift+1);
       document.getElementById('oct-sl').value=octShift;
       document.getElementById('oct-val').textContent=octShift>=0?'+'+octShift:String(octShift);
       const t=document.getElementById('oct-toast');t.textContent='OCT '+(octShift>=0?'+':'')+octShift;
@@ -2400,7 +2419,7 @@ window.addEventListener('load',async()=>{
   buildWCList();
   createNewLine();
   setLdProgress(10,'LOADING...');
-  document.getElementById('oct-val').textContent='-1';
+  document.getElementById('oct-val').textContent='0';
   await loadInstrument('synth-lead');
 });
 </script>
