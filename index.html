@@ -93,6 +93,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 .sg-shortcut-btn{font-family:'Press Start 2P',monospace;font-size:0.38rem;background:var(--ctrl);border:1px solid var(--border-s);box-shadow:1px 1px 0 var(--pixel);padding:5px;cursor:pointer;color:var(--text2);width:100%;text-align:center;transition:all 0.1s;}
 .sg-shortcut-btn:hover{background:var(--on);color:var(--on-t);}
 
+.instr-category{font-family:'Press Start 2P',monospace;font-size:0.28rem;color:var(--text3);letter-spacing:1px;padding:5px 4px 3px;margin-top:4px;border-bottom:1px solid var(--border);text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;}
+.instr-category:hover{color:var(--text);}
+.instr-category:first-child{margin-top:0;}
+.instr-category-arrow{font-size:0.45rem;transition:transform 0.15s;}
+.instr-category-arrow.collapsed{transform:rotate(180deg);}
+.instr-category-body{display:flex;flex-direction:column;gap:3px;overflow:hidden;}
 /* INSTRUMENT CARDS */
 .instr-grid{display:flex;flex-direction:column;gap:3px;margin-bottom:3px;}
 .instr-card{display:flex;align-items:center;gap:6px;background:var(--ctrl);border:1px solid var(--border-s);box-shadow:1px 1px 0 var(--pixel);padding:4px 6px;cursor:pointer;transition:all 0.08s;position:relative;overflow:hidden;}
@@ -117,7 +123,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 .instr-card.active .instr-icon{animation:iconFloatFast 0.8s ease-in-out infinite;}
 @keyframes iconFloatFast{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
 .instr-info{display:flex;flex-direction:column;min-width:0;}
-.instr-name{font-family:'Press Start 2P',monospace;font-size:0.3rem;color:var(--text2);letter-spacing:0.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.instr-name{font-family:'Press Start 2P',monospace;font-size:0.28rem;color:var(--text2);letter-spacing:0.3px;white-space:normal;overflow:visible;line-height:1.6;}
 .instr-sub{font-size:0.55rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .instr-card.active .instr-name,.instr-card.active .instr-sub{color:var(--on-t);}
 .instr-card.active .instr-sub{opacity:0.7;}
@@ -502,21 +508,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
       </div>
       <div id="instr-panel-body">
         <div class="instr-grid" id="instr-grid">
-          <div class="instr-card active" onclick="selectInstr('synth-lead',this)"><div class="instr-icon">🎸</div><div class="instr-info"><div class="instr-name">SYNTH LEAD</div><div class="instr-sub">dirty · electric</div></div></div>
-          <div class="instr-card" onclick="selectInstr('synth',this)"><div class="instr-icon">🌊</div><div class="instr-info"><div class="instr-name">SYNTH</div><div class="instr-sub">smooth · wave</div></div></div>
-          <div class="instr-card" onclick="selectInstr('am',this)"><div class="instr-icon">📡</div><div class="instr-info"><div class="instr-name">AM SYNTH</div><div class="instr-sub">radio · buzz</div></div></div>
-          <div class="instr-card" onclick="selectInstr('fm',this)"><div class="instr-icon">⚡</div><div class="instr-info"><div class="instr-name">FM SYNTH</div><div class="instr-sub">digital · bright</div></div></div>
-          <div class="instr-card" onclick="selectInstr('membrane',this)"><div class="instr-icon">🥁</div><div class="instr-info"><div class="instr-name">MEMBRANE</div><div class="instr-sub">drum · percussive</div></div></div>
-          <div class="instr-card" onclick="selectInstr('piano',this)"><div class="instr-icon">🎹</div><div class="instr-info"><div class="instr-name">GRAND PIANO</div><div class="instr-sub">sampled · classic</div></div></div>
-          <div class="instr-card" onclick="selectInstr('strings',this)"><div class="instr-icon">🎻</div><div class="instr-info"><div class="instr-name">STRINGS</div><div class="instr-sub">lush · orchestral</div></div></div>
-          <div class="instr-card" onclick="selectInstr('flute',this)"><div class="instr-icon">🪈</div><div class="instr-info"><div class="instr-name">FLUTE</div><div class="instr-sub">airy · breathy</div></div></div>
-          <div class="instr-card" onclick="selectInstr('guitar',this)"><div class="instr-icon">🎵</div><div class="instr-info"><div class="instr-name">GUITAR</div><div class="instr-sub">acoustic · warm</div></div></div>
-          <div class="instr-card" onclick="selectInstr('elec-guitar',this)"><div class="instr-icon">⚡</div><div class="instr-info"><div class="instr-name">ELEC GUITAR</div><div class="instr-sub">distorted · raw</div></div></div>
-          <div class="instr-card" onclick="selectInstr('harp',this)"><div class="instr-icon">✨</div><div class="instr-info"><div class="instr-name">HARP</div><div class="instr-sub">glassy · ethereal</div></div></div>
-          <div class="instr-card" onclick="selectInstr('bell',this)"><div class="instr-icon">🔔</div><div class="instr-info"><div class="instr-name">BELL</div><div class="instr-sub">bright · metallic</div></div></div>
-          <div class="instr-card" onclick="selectInstr('bass',this)"><div class="instr-icon">🎸</div><div class="instr-info"><div class="instr-name">BASS</div><div class="instr-sub">deep · low</div></div></div>
-          <div class="instr-card" onclick="selectInstr('organ',this)"><div class="instr-icon">⛪</div><div class="instr-info"><div class="instr-name">ORGAN</div><div class="instr-sub">church · sustained</div></div></div>
-          <div class="instr-card" onclick="selectInstr('voice',this)" style="border-color:rgba(255,180,100,0.5)"><div class="instr-icon" style="width:22px;height:22px;"><svg width="22" height="22" viewBox="0 0 22 22" style="image-rendering:pixelated;flex-shrink:0;">
+          <!-- FILSTRUMENT — always visible, no category -->
+          <div class="instr-card" onclick="selectInstr('voice',this)" style="border-color:rgba(255,180,100,0.5);margin-bottom:2px;"><div class="instr-icon" style="width:22px;height:22px;"><svg width="22" height="22" viewBox="0 0 22 22" style="image-rendering:pixelated;flex-shrink:0;">
 <rect x="6" y="1" width="10" height="1" fill="#111"/><rect x="5" y="2" width="12" height="1" fill="#111"/>
 <rect x="4" y="3" width="14" height="1" fill="#111"/><rect x="4" y="4" width="14" height="1" fill="#111"/>
 <rect x="3" y="5" width="3" height="6" fill="#111"/><rect x="16" y="5" width="3" height="6" fill="#111"/>
@@ -533,8 +526,43 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 <rect x="9" y="17" width="4" height="2" fill="#111"/>
 <rect x="7" y="19" width="8" height="2" fill="#111"/>
 </svg></div><div class="instr-info"><div class="instr-name">FILSTRUMENT</div><div class="instr-sub">fils · voice</div></div></div>
+          <div class="instr-card" onclick="selectInstr('mic',this)" style="border-color:rgba(100,180,255,0.5);margin-bottom:4px;"><div class="instr-icon">🎙️</div><div class="instr-info"><div class="instr-name">YOUR VOICE</div><div class="instr-sub">record · 2 secs</div></div></div>
+          <!-- SYNTHS -->
+          <div class="instr-category" onclick="toggleCategory('synths')"><span>SYNTHS</span><span class="instr-category-arrow" id="cat-arrow-synths">▲</span></div>
+          <div class="instr-category-body" id="cat-synths">
+            <div class="instr-card active" onclick="selectInstr('synth-lead',this)"><div class="instr-icon">🎸</div><div class="instr-info"><div class="instr-name">SYNTH LEAD</div><div class="instr-sub">dirty · electric</div></div></div>
+            <div class="instr-card" onclick="selectInstr('synth',this)"><div class="instr-icon">🌊</div><div class="instr-info"><div class="instr-name">SYNTH</div><div class="instr-sub">smooth · wave</div></div></div>
+            <div class="instr-card" onclick="selectInstr('am',this)"><div class="instr-icon">📡</div><div class="instr-info"><div class="instr-name">AM SYNTH</div><div class="instr-sub">radio · buzz</div></div></div>
+            <div class="instr-card" onclick="selectInstr('fm',this)"><div class="instr-icon">⚡</div><div class="instr-info"><div class="instr-name">FM SYNTH</div><div class="instr-sub">digital · bright</div></div></div>
+          </div>
+          <!-- KEYS -->
+          <div class="instr-category" onclick="toggleCategory('keys')"><span>KEYS</span><span class="instr-category-arrow" id="cat-arrow-keys">▲</span></div>
+          <div class="instr-category-body" id="cat-keys">
+            <div class="instr-card" onclick="selectInstr('piano',this)"><div class="instr-icon">🎹</div><div class="instr-info"><div class="instr-name">GRAND PIANO</div><div class="instr-sub">sampled · classic</div></div></div>
+            <div class="instr-card" onclick="selectInstr('membrane',this)"><div class="instr-icon">🥁</div><div class="instr-info"><div class="instr-name">MEMBRANE</div><div class="instr-sub">drum · percussive</div></div></div>
+          </div>
+          <!-- STRINGS -->
+          <div class="instr-category" onclick="toggleCategory('strings')"><span>STRINGS</span><span class="instr-category-arrow" id="cat-arrow-strings">▲</span></div>
+          <div class="instr-category-body" id="cat-strings">
+            <div class="instr-card" onclick="selectInstr('strings',this)"><div class="instr-icon">🎻</div><div class="instr-info"><div class="instr-name">STRINGS</div><div class="instr-sub">lush · orchestral</div></div></div>
+            <div class="instr-card" onclick="selectInstr('guitar',this)"><div class="instr-icon">🎸</div><div class="instr-info"><div class="instr-name">GUITAR</div><div class="instr-sub">acoustic · warm</div></div></div>
+            <div class="instr-card" onclick="selectInstr('elec-guitar',this)"><div class="instr-icon">⚡</div><div class="instr-info"><div class="instr-name">ELEC GUITAR</div><div class="instr-sub">distorted · raw</div></div></div>
+            <div class="instr-card" onclick="selectInstr('bass',this)"><div class="instr-icon">🎵</div><div class="instr-info"><div class="instr-name">BASS</div><div class="instr-sub">deep · low</div></div></div>
+            <div class="instr-card" onclick="selectInstr('harp',this)"><div class="instr-icon">✨</div><div class="instr-info"><div class="instr-name">HARP</div><div class="instr-sub">glassy · ethereal</div></div></div>
+          </div>
+          <!-- WINDS -->
+          <div class="instr-category" onclick="toggleCategory('winds')"><span>WINDS</span><span class="instr-category-arrow" id="cat-arrow-winds">▲</span></div>
+          <div class="instr-category-body" id="cat-winds">
+            <div class="instr-card" onclick="selectInstr('flute',this)"><div class="instr-icon">🪈</div><div class="instr-info"><div class="instr-name">FLUTE</div><div class="instr-sub">airy · breathy</div></div></div>
+          </div>
+          <!-- BELLS -->
+          <div class="instr-category" onclick="toggleCategory('bells')"><span>BELLS</span><span class="instr-category-arrow" id="cat-arrow-bells">▲</span></div>
+          <div class="instr-category-body" id="cat-bells">
+            <div class="instr-card" onclick="selectInstr('bell',this)"><div class="instr-icon">🔔</div><div class="instr-info"><div class="instr-name">BELL</div><div class="instr-sub">bright · metallic</div></div></div>
+            <div class="instr-card" onclick="selectInstr('xylophone',this)"><div class="instr-icon">🎵</div><div class="instr-info"><div class="instr-name">XYLOPHONE</div><div class="instr-sub">mallet · wooden</div></div></div>
+          </div>
         </div>
-        <div id="instr-status" style="font-family:'Press Start 2P',monospace;font-size:0.3rem;color:var(--text3);margin-top:3px;">Loading...</div>
+                <div id="instr-status" style="font-family:'Press Start 2P',monospace;font-size:0.3rem;color:var(--text3);margin-top:3px;">Loading...</div>
       </div>
     </div>
     <div class="ps">
@@ -1370,67 +1398,112 @@ const ICFG={
   'fm':         {build:()=>new Tone.PolySynth(Tone.FMSynth,{envelope:{attack:0.02,decay:0.1,sustain:0.5,release:0.8},volume:-6}).connect(delay)},
   'membrane':   {build:()=>new Tone.PolySynth(Tone.MembraneSynth,{envelope:{attack:0.001,decay:0.4,sustain:0.01,release:1.4},volume:-4}).connect(delay)},
   'piano':      {sampler:true,build:()=>new Tone.Sampler({urls:pianoUrls(),release:1.2,volume:-4}).connect(delay)},
-  'strings':    {build:()=>new Tone.PolySynth(Tone.Synth,{oscillator:{type:'sawtooth'},envelope:{attack:0.5,decay:0.1,sustain:0.9,release:2},volume:-6}).connect(delay)},
-  'flute':      {build:()=>new Tone.PolySynth(Tone.Synth,{oscillator:{type:'sine'},envelope:{attack:0.18,decay:0.05,sustain:0.85,release:0.7},volume:-4}).connect(delay)},
+  'strings':    {sampler:true,build:()=>new Tone.Sampler({urls:{C3:'C3.mp3',C4:'C4.mp3',C5:'C5.mp3'},baseUrl:'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/string-ensemble-1-mp3/',release:2,volume:-4}).connect(reverb)},
+  'flute':      {sampler:true,build:()=>new Tone.Sampler({urls:{C4:'C4.mp3',C5:'C5.mp3',C6:'C6.mp3'},baseUrl:'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/flute-mp3/',release:0.5,volume:-2}).connect(reverb)},
   'guitar':     {build:()=>new Tone.PolySynth(Tone.Synth,{oscillator:{type:'triangle'},envelope:{attack:0.001,decay:0.5,sustain:0.1,release:1.2},volume:-5}).connect(delay)},
   'elec-guitar':{build:()=>{const dist=new Tone.Distortion(0.6).connect(delay);return new Tone.PolySynth(Tone.Synth,{oscillator:{type:'sawtooth'},envelope:{attack:0.001,decay:0.2,sustain:0.6,release:0.3},volume:-4}).connect(dist);}},
-  'harp':       {build:()=>new Tone.PolySynth(Tone.Synth,{oscillator:{type:'sine'},envelope:{attack:0.001,decay:1.2,sustain:0,release:0.8},volume:-4}).connect(reverb)},
-  'bell':       {build:()=>new Tone.PolySynth(Tone.Synth,{oscillator:{type:'sine'},envelope:{attack:0.001,decay:2,sustain:0,release:0.5},volume:-5}).connect(reverb)},
+  'harp':       {sampler:true,build:()=>new Tone.Sampler({urls:{C3:'C3.mp3',C4:'C4.mp3',C5:'C5.mp3',C6:'C6.mp3'},baseUrl:'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/orchestral-harp-mp3/',release:2,volume:-2}).connect(reverb)},
+  'bell':       {sampler:true,build:()=>new Tone.Sampler({urls:{C4:'C4.mp3',C5:'C5.mp3',C6:'C6.mp3'},baseUrl:'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/tubular-bells-mp3/',release:2,volume:-3}).connect(reverb)},
   'bass':       {build:()=>new Tone.PolySynth(Tone.Synth,{oscillator:{type:'sawtooth'},envelope:{attack:0.05,decay:0.2,sustain:0.8,release:0.5},volume:-2}).connect(delay)},
-  'organ':      {build:()=>new Tone.PolySynth(Tone.Synth,{oscillator:{type:'square'},envelope:{attack:0.01,decay:0.01,sustain:1,release:0.05},volume:-7}).connect(reverb)},
-      'voice':      {sampler:false,build:()=>{
-    setStatus('READY');
-    const BASE='https://keyano.app/';
-    // Use Tone.js Player + PitchShift for true pitch shift without speed change
-    const pitchShift=new Tone.PitchShift(0).connect(reverb);
-    const allFiles={};
-    // Letters
-    'abcdefghijklmnopqrstuvwxyz'.split('').forEach(k=>{
-      allFiles[k]=BASE+k+'.mp3';
-    });
-    // Word sounds
-    const wordFiles={
-      'FILS':BASE+'FILS.mp3','MACHINE':BASE+'MACHINE.mp3',
-      'AGENDA':BASE+'AGENDA.mp3','ASEXUAL':BASE+'ASEXUAL.mp3',
-      'ASEXUALS':BASE+'ASEXUALS.mp3','BEND':BASE+'BEND.mp3',
-      'BISEXUAL':BASE+'BISEXUAL.mp3','CONTROL':BASE+'CONTROL.mp3',
-      'DELETE':BASE+'DELETE.mp3','ESCAPE':BASE+'ESCAPE.mp3',
-      'GAY':BASE+'GAY.mp3','GENDER':BASE+'GENDER.mp3',
-      'LESBIAN':BASE+'LESBIAN.mp3','LESBIANS':BASE+'LESBIANS.mp3',
-      'LOVE_ME':BASE+'LOVE_ME.mp3','WHY_ARENT_YOU_GAY':BASE+'WHY_ARENT_YOU_GAY.mp3',
-      'ZEN':BASE+'ZEN.mp3',
-      'LOL':BASE+'HA_HA_HA.mp3','LMAO':BASE+'HA_HA_HA.mp3',
-      'LAUGH':BASE+'HA_HA_HA.mp3','FUNNY':BASE+'HA_HA_HA.mp3',
-      'HA':BASE+'HA_HA_HA.mp3','HAHA':BASE+'HA_HA_HA.mp3',
-    };
-    function playUrl(url){
-      // Tone.Player for true pitch shift
-      pitchShift.pitch=octShift*12;// semitones = octaves * 12
-      const player=new Tone.Player({url,autostart:false,onload:()=>{
-        player.connect(pitchShift);
-        player.start();
-        // cleanup after done
-        setTimeout(()=>{try{player.dispose();}catch(e){}},5000);
-      }}).connect(pitchShift);
-    }
+  'xylophone':  {sampler:true,build:()=>new Tone.Sampler({urls:{C4:'C4.mp3',C5:'C5.mp3',C6:'C6.mp3'},baseUrl:'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/xylophone-mp3/',release:0.8,volume:-2}).connect(reverb)},
+  'mic':        {sampler:false,build:()=>{
+    setStatus('ALLOW MIC...');
+    let micBuffer=null;
+    const ctx=Tone.getContext().rawContext;
+    const gainNode=ctx.createGain();gainNode.gain.value=1.5;gainNode.connect(ctx.destination);
+    // Request microphone
+    navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+      const mediaRecorder=new MediaRecorder(stream);
+      const chunks=[];
+      mediaRecorder.ondataavailable=e=>chunks.push(e.data);
+      mediaRecorder.onstop=()=>{
+        const blob=new Blob(chunks,{type:'audio/webm'});
+        const reader=new FileReader();
+        reader.onload=()=>{
+          ctx.decodeAudioData(reader.result).then(buf=>{
+            micBuffer=buf;
+            setStatus('READY — press any key');
+            console.log('Mic recorded!');
+          }).catch(e=>console.error('decode:',e));
+        };
+        reader.readAsArrayBuffer(blob);
+      };
+      // Record 2 seconds automatically
+      setStatus('RECORDING...');
+      mediaRecorder.start();
+      setTimeout(()=>{mediaRecorder.stop();stream.getTracks().forEach(t=>t.stop());setStatus('PROCESSING...');},2000);
+    }).catch(e=>{setStatus('MIC DENIED');console.error('Mic error:',e);});
     return {
       _isRawVoice:true,
-      _wordSounds:{},// kept for compat
       triggerAttack:(note,time,key)=>{
-        const url=allFiles[key];if(!url)return;
-        playUrl(url);
+        if(!micBuffer)return;
+        const src=ctx.createBufferSource();
+        src.buffer=micBuffer;
+        src.playbackRate.value=Math.pow(2,octShift);
+        src.connect(gainNode);src.start();
       },
       triggerAttackRelease:(note,dur,time,key)=>{
-        const url=allFiles[key];if(!url)return;
-        playUrl(url);
-      },
-      playWord:(word)=>{
-        const url=wordFiles[word.toUpperCase()];if(!url)return;
-        playUrl(url);
+        if(!micBuffer)return;
+        const src=ctx.createBufferSource();
+        src.buffer=micBuffer;
+        src.playbackRate.value=Math.pow(2,octShift);
+        src.connect(gainNode);src.start();
       },
       triggerRelease:()=>{},
       releaseAll:()=>{},
-      dispose:()=>{try{pitchShift.dispose();}catch(e){}},
+      dispose:()=>{}
+    };
+  }},
+  'voice':      {sampler:false,build:()=>{
+    setStatus('Loading voice...');
+    const BASE='https://keyano.app/';
+    const pitchShift=new Tone.PitchShift(0).connect(reverb);
+    // Pre-load all letter players
+    const players={};
+    const wordPlayers={};
+    let loaded=0;
+    const total=26;
+    'abcdefghijklmnopqrstuvwxyz'.split('').forEach(k=>{
+      const p=new Tone.Player({url:BASE+k+'.mp3',onload:()=>{
+        loaded++;if(loaded>=total)setStatus('READY');
+      },onerror:()=>{loaded++;if(loaded>=total)setStatus('READY');}
+      }).connect(pitchShift);
+      players[k]=p;
+    });
+    const wordMap={
+      'FILS':'FILS','MACHINE':'MACHINE','AGENDA':'AGENDA',
+      'ASEXUAL':'ASEXUAL','ASEXUALS':'ASEXUALS','BEND':'BEND',
+      'BISEXUAL':'BISEXUAL','CONTROL':'CONTROL','DELETE':'DELETE',
+      'ESCAPE':'ESCAPE','GAY':'GAY','GENDER':'GENDER',
+      'LESBIAN':'LESBIAN','LESBIANS':'LESBIANS','LOVE_ME':'LOVE_ME',
+      'WHY_ARENT_YOU_GAY':'WHY_ARENT_YOU_GAY','ZEN':'ZEN',
+      'LOL':'HA_HA_HA','LMAO':'HA_HA_HA','LAUGH':'HA_HA_HA',
+      'FUNNY':'HA_HA_HA','HA':'HA_HA_HA','HAHA':'HA_HA_HA',
+    };
+    Object.entries(wordMap).forEach(([word,file])=>{
+      if(!wordPlayers[file]){
+        wordPlayers[file]=new Tone.Player({url:BASE+file+'.mp3'}).connect(pitchShift);
+      }
+      wordPlayers[word]=wordPlayers[file];
+    });
+    function playPlayer(p){
+      if(!p||p.state==='started')return;
+      pitchShift.pitch=octShift*12;// semitones, no speed change
+      try{p.stop();p.start();}catch(e){}
+    }
+    return {
+      _isRawVoice:true,
+      _wordSounds:{},
+      triggerAttack:(note,time,key)=>playPlayer(players[key]),
+      triggerAttackRelease:(note,dur,time,key)=>playPlayer(players[key]),
+      playWord:(word)=>playPlayer(wordPlayers[word.toUpperCase()]),
+      triggerRelease:()=>{},
+      releaseAll:()=>{},
+      dispose:()=>{
+        Object.values(players).forEach(p=>{try{p.dispose();}catch(e){}});
+        Object.values(wordPlayers).forEach(p=>{try{p.dispose();}catch(e){}});
+        try{pitchShift.dispose();}catch(e){};
+      },
     };
   }},
 };
@@ -1468,6 +1541,14 @@ async function loadInstrument(key){
 }
 
 let scalePanelOpen=true;
+const catState={synths:true,keys:true,strings:true,winds:true,bells:true};
+function toggleCategory(name){
+  catState[name]=!catState[name];
+  const body=document.getElementById('cat-'+name);
+  const arrow=document.getElementById('cat-arrow-'+name);
+  if(body)body.style.display=catState[name]?'flex':'none';
+  if(arrow){arrow.textContent=catState[name]?'▲':'▼';arrow.classList.toggle('collapsed',!catState[name]);}
+}
 function toggleScalePanel(){
   scalePanelOpen=!scalePanelOpen;
   document.getElementById('scale-panel-body').style.display=scalePanelOpen?'':'none';
@@ -1959,8 +2040,61 @@ const FPOSTS=[
   {user:FUSERS[4],dataId:'fp5',instr:'AM Synth',time:'2H AGO',likes:17,replies:[]},
 ];
 let feedBuilt=false;
+function downloadPost(dataId){
+  const data=POST_STORE[dataId];if(!data||!synth)return;
+  const kn=getKN();
+  const sampleRate=44100;
+  const noteLen=0.15;// seconds per note
+  const totalNotes=data.filter(k=>k.t==='letter').length;
+  const duration=Math.max(2,totalNotes*noteLen+1);
+  const offCtx=new OfflineAudioContext(2,sampleRate*duration,sampleRate);
+  let t=0.1;
+  data.forEach(k=>{
+    if(k.t==='letter'){
+      const note=kn[k.l.toLowerCase()];
+      if(note){
+        try{
+          const osc=offCtx.createOscillator();
+          const gain=offCtx.createGain();
+          osc.type='sawtooth';
+          osc.frequency.value=Tone.Frequency(note).toFrequency();
+          gain.gain.setValueAtTime(0.3,t);
+          gain.gain.exponentialRampToValueAtTime(0.001,t+noteLen);
+          osc.connect(gain);gain.connect(offCtx.destination);
+          osc.start(t);osc.stop(t+noteLen);
+          t+=noteLen*0.8;
+        }catch(e){}
+      }
+    }
+  });
+  offCtx.startRendering().then(buffer=>{
+    // Convert to WAV
+    const wav=bufferToWav(buffer);
+    const blob=new Blob([wav],{type:'audio/wav'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='keyano-creation.wav';a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  });
+}
+function bufferToWav(buffer){
+  const numCh=buffer.numberOfChannels;
+  const len=buffer.length;
+  const out=new ArrayBuffer(44+len*numCh*2);
+  const view=new DataView(out);
+  const write=(off,str)=>{for(let i=0;i<str.length;i++)view.setUint8(off+i,str.charCodeAt(i));};
+  write(0,'RIFF');view.setUint32(4,36+len*numCh*2,true);write(8,'WAVE');
+  write(12,'fmt ');view.setUint32(16,16,true);view.setUint16(20,1,true);
+  view.setUint16(22,numCh,true);view.setUint32(24,buffer.sampleRate,true);
+  view.setUint32(28,buffer.sampleRate*numCh*2,true);view.setUint16(32,numCh*2,true);
+  view.setUint16(34,16,true);write(36,'data');view.setUint32(40,len*numCh*2,true);
+  let off=44;
+  for(let i=0;i<len;i++)for(let ch=0;ch<numCh;ch++){
+    const s=Math.max(-1,Math.min(1,buffer.getChannelData(ch)[i]));
+    view.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;
+  }
+  return out;
+}
 function buildFeed(){
-  if(feedBuilt)return;feedBuilt=true;
   const fp=document.getElementById('feed-posts');
   FPOSTS.forEach(p=>fp.appendChild(mkPostEl(p)));
   buildTrending();buildSuggested();
@@ -1997,6 +2131,7 @@ function mkPostEl(post){
     <div class="fp-instr">${post.instr}</div>
     <div class="fp-actions">
       <button class="fp-play" onclick="playPostById('${post.dataId}')">▶ PLAY</button>
+      <button class="fp-reply-btn" onclick="downloadPost('${post.dataId}')">⬇ SAVE</button>
       <div class="fp-like" onclick="this.textContent=(this.textContent.startsWith('♥')?'♡':'♥')+' '+(parseInt(this.textContent.replace(/\D/g,''))||0)">♥ ${post.likes||0}</div>
       <button class="fp-reply-btn" onclick="toggleReplyInput('${postId}')">↩ REPLY</button>
     </div>
